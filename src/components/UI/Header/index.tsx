@@ -49,6 +49,8 @@ const Header = () => {
           </Link>
           <GetStartedButton padding="0.5rem 0.75rem" />
         </CallToActions>
+        <div className="flex m-4 items-center justify-center">
+        </div>
       </Inner>
     </Wrapper>
   );

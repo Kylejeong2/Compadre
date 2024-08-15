@@ -1,6 +1,6 @@
 "use client";
 import { useUser } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/Common/Button";
 
 const Profile = () => {
   const { user } = useUser();

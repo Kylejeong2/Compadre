@@ -5,6 +5,7 @@ import { Poppins, Inter } from "next/font/google";
 import Provider from "@/components/Layout/Provider";
 import Layout from "@/components/Layout";
 import { PreloaderProvider } from "@/context/PreloaderContext";
+import { ThemeProvider } from "@/components/Layout/Theme-Provider";
 
 const inter = Inter({ subsets: ["latin"] });
 // const poppins = Poppins({
@@ -27,11 +28,13 @@ export default function RootLayout({
       <html lang="en">
         <Provider>
           <body className={inter.className}>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
             <PreloaderProvider>
-              <Layout>
-                {children}
-              </Layout>
-            </PreloaderProvider>
+                <Layout>
+                  {children}
+                </Layout>
+              </PreloaderProvider>
+            </ThemeProvider>
           </body>
         </Provider>
       </html>
