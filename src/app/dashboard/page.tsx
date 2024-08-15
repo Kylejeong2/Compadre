@@ -17,13 +17,26 @@ const DashboardPage = async (props: Props) => {
     const compadres = await db.select().from($compadres).where(
         eq($compadres.userId, userId!)
     )
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stripe/checkSubscription?userId=${userId}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-    const { isSubscribed } = await response.json();
+    let subbed = false;
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stripe/checkSubscription?userId=${userId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const responseText = await response.text();
+        console.log('Raw response:', responseText);
+        const { isSubscribed } = JSON.parse(responseText);
+        subbed = isSubscribed;
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        // Handle the error appropriately, maybe set a default value for subbed
+        subbed = false;
+    }
 
   return (
     <>
@@ -57,7 +70,7 @@ const DashboardPage = async (props: Props) => {
                     
 
                     <div className='grid sm:grid-cols-3 md:grid-cols-5 grid-cols-1 gap-3'>
-                      {compadres.length === 1 && !isSubscribed && (
+                      {compadres.length === 1 && !subbed && (
                           <CreateCompadre />
                       )}
                         {compadres.map(compadre => {
@@ -83,7 +96,7 @@ const DashboardPage = async (props: Props) => {
                             )
                         })}
                     </div>
-                    {compadres.length === 1 && !isSubscribed && (
+                    {compadres.length === 1 && !subbed && (
                     <div className='mt-8 p-4 bg-yellow-100 rounded-lg'>
                         <p className='text-yellow-800'>You&apos;ve created your first Compadre! Subscribe to create more.</p>
                         <Link href="/subscription">
