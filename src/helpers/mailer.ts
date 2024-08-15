@@ -1,30 +1,35 @@
 import nodemailer from "nodemailer";
-import Users from "@/models/user";
+import { clerk } from "@/configs/clerk-server";
 import bcrypt from "bcryptjs";
 import { EMAIL_TYPE } from "@/constants/email";
 
 export async function sendMail(
-  email: string,
   userId: string,
   emailType: string
 ) {
   try {
-    const hashToken = await bcrypt.hash(userId.toString(), 10);
-
-    switch (emailType) {
-      case EMAIL_TYPE.VERIFY:
-        await Users.findByIdAndUpdate(userId, {
-          varificationToken: hashToken,
-          varificationTokenExpire: Date.now() + 3600000,
-        });
-        break;
-      case EMAIL_TYPE.RESET_PASSWORD:
-        await Users.findByIdAndUpdate(userId, {
-          forgotPasswordToken: hashToken,
-          forgotPasswordTokenExpire: Date.now() + 3600000,
-        });
-        break;
+    const user = await clerk.users.getUser(userId);
+    if (!user) {
+      throw new Error("User not found");
     }
+
+    const email = user.emailAddresses.find(e => e.id === user.primaryEmailAddressId)?.emailAddress;
+    if (!email) {
+      throw new Error("User email not found");
+    }
+
+    const hashToken = await bcrypt.hash(userId, 10);
+
+    // Update user metadata in Clerk
+    const metadata = { ...user.publicMetadata };
+    if (emailType === EMAIL_TYPE.VERIFY) {
+      metadata.verificationToken = hashToken;
+      metadata.verificationTokenExpire = Date.now() + 3600000;
+    } else if (emailType === EMAIL_TYPE.RESET_PASSWORD) {
+      metadata.forgotPasswordToken = hashToken;
+      metadata.forgotPasswordTokenExpire = Date.now() + 3600000;
+    }
+    await clerk.users.updateUser(userId, { publicMetadata: metadata });
 
     const transporter = nodemailer.createTransport({
       service: process.env.SMPT_HOST || "",
@@ -40,7 +45,7 @@ export async function sendMail(
     const mailOptions = {
       from: process.env.SMPT_USER || "",
       to: email,
-      subject: EMAIL_TYPE.VERIFY ? "Verify your email" : "Reset your password",
+      subject: emailType === EMAIL_TYPE.VERIFY ? "Verify your email" : "Reset your password",
       html: `<p>Click <a href="${
         process.env.DOMAIN
       }/verifymail?token=${hashToken}">here</a> to ${
@@ -54,14 +59,20 @@ export async function sendMail(
       </p>`,
     };
 
-    transporter.sendMail(mailOptions, async (error, info) => {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log(`Email sent: ${info.response}`);
-      }
+    await new Promise((resolve, reject) => {
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Error sending email:", error);
+          reject(error);
+        } else {
+          console.log(`Email sent: ${info.response}`);
+          resolve(info);
+        }
+      });
     });
+
   } catch (error: any) {
-    throw new Error(error);
+    console.error("Error in sendMail:", error);
+    throw new Error(error.message || "An error occurred while sending the email");
   }
 }
