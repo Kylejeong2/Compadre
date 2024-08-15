@@ -23,19 +23,19 @@ const Header = () => {
   return (
     <Wrapper>
       <Inner className="flex items-center justify-between">
-        <Link href="/" className="flex-shrink-0">
-          <LogoContainer className="flex items-center">
+        <div className="flex items-center justify-between w-full md:w-auto">
+          <Link href="/" className="flex-shrink-0">
             <Image src="/images/logo.png" alt="compadre_logo" width={140} height={30} priority />
-            <BurgerMenu onClick={() => setIsOpen(!isOpen)} className="ml-4 md:hidden">
-              <motion.div
-                variants={menu}
-                animate={isOpen ? 'open' : 'closed'}
-                initial="closed"
-              ></motion.div>
-              <Image src={ic_bars} alt="bars" />
-            </BurgerMenu>
-          </LogoContainer>
-        </Link>
+          </Link>
+          <BurgerMenu onClick={() => setIsOpen(!isOpen)} className="ml-4 md:hidden">
+            <motion.div
+              variants={menu}
+              animate={isOpen ? 'open' : 'closed'}
+              initial="closed"
+            ></motion.div>
+            <Image src={ic_bars} alt="bars" />
+          </BurgerMenu>
+        </div>
         <Nav className={`flex-grow justify-center ${isOpen ? 'active' : 'hidden md:flex'}`}>
           {links.map((link, i) => (
             <Link href={link.url} key={i} className="mx-4">
