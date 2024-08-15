@@ -1,14 +1,9 @@
 import getStripe from "@/configs/stripe";
 import useSubscriptions from "@/hooks/useSubscriptions";
-import { useSession } from "next-auth/react";
 import { FormEvent, useEffect, useState } from "react";
 import PlanManageButton from "./PlanManageButton";
 
-const PlanCard = ({
-  plan,
-  session,
-  subscriptionPlan,
-}: {
+const PlanCard = ({ plan, session, subscriptionPlan, }: {
   plan: SubscriptionPlan;
   session: any;
   subscriptionPlan: any;
@@ -61,11 +56,11 @@ const PlanCard = ({
         ))}
       </ul>
       <PlanManageButton
-        userId={session.user.id}
-        email={session.user.email || ""}
+        userId={session?.user?.id ?? ''}
+        email={session?.user?.email ?? ''}
         stripePriceId={plan.stripePriceId}
         stripeCustomerId={subscriptionPlan?.stripeCustomerId}
-        isSubscribed={!!subscriptionPlan.isSubscribed}
+        isSubscribed={!!subscriptionPlan?.isSubscribed}
         isCurrentPlan={subscriptionPlan?.name === plan.name}
       />
     </div>

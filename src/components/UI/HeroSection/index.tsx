@@ -18,7 +18,7 @@ const HeroSection = () => {
     <Wrapper>
       <Inner>
         <Pill>
-          <span>Introducing compadre cards</span>
+          <span>Introducing Compadre</span>
           <Image src={ic_chevron_right} alt="chevron-right" />
         </Pill>
         <HeroTextContainer>

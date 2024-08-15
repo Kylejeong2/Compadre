@@ -1,11 +1,10 @@
 import React from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/Common/Button";
 import { useRouter } from "next/navigation";
 import useSubscriptions from "@/hooks/useSubscriptions";
 import { storeSubscriptionPlans } from "@/configs/stripe";
 import PlanCard from "@/components/Plans/PlanCard";
-import { Card } from "@/components/ui/card";
 import { auth } from "@clerk/nextjs/server";
 
 const Page = async () => {
@@ -14,7 +13,7 @@ const Page = async () => {
 
   return (
     <div className="flex h-full w-full flex-col  items-center justify-center p-24">
-      <Card className="p-6 mb-2">
+      <div className="p-6 mb-2">
         <p className="text-lg font-semibold leading-none">
           {subscriptionPlan.name}
         </p>
@@ -30,7 +29,7 @@ const Page = async () => {
               ).toLocaleDateString()
             : null}
         </p>
-      </Card>
+      </div>
       <div className="flex w-full  gap-3">
         {storeSubscriptionPlans.map((plan) => (
           <PlanCard

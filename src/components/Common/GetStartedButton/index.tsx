@@ -3,14 +3,17 @@ import { LinkTo } from './styles';
 
 const GetStartedButton = ({ padding }: { padding: string }) => {
   return (
-    <LinkTo
-      style={{
-        padding: padding,
-      }}
-      href="/"
-    >
-      Get Started
-    </LinkTo>
+    <div className='bg-green-600 rounded-xl'>
+       <LinkTo
+        style={{
+          padding: padding,
+        }}
+        href="/dashboard"
+      >
+        Get Started
+      </LinkTo>
+    </div>
+     
   );
 };
 

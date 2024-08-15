@@ -1,3 +1,5 @@
+// For auth with stripe and stuff
+
 import { auth, currentUser } from "@clerk/nextjs/server";
 
 export const getAuthSession = async () => {

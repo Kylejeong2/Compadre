@@ -1,32 +1,51 @@
-# LaunchKit
+# Compadre
+________________________________
+Your best friend that's always there for you. 
 
-This Next.js 13.5 template to Ship fast and is designed to eliminate the tedious and time-consuming setup tasks that most developers find boring. It provides all the essential configurations and integrations you need to kickstart your next Product. With this template, you can bypass the initial hurdles and rapidly develop your product, getting it ready for launch in no time.
+## Getting Started
 
-## Features
+First, run the development server:
 
-- **Streamlined Setup:** We've taken care of the mundane setup steps, so you can focus on what matters most—building your application.
-- **Authentication Options:** Supports both email/password and Google authentication out of the box, giving users the flexibility to choose their preferred login method.
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-- **Database Connections:** Easily connect to database
-- **Logins:** Both email password and goggle auth already setup
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- **Email Integration:** Seamlessly integrate Mailer for email functionality, including transactional emails and notifications.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-- **Payment Processing:** Implement Stripe for secure and efficient payment processing without the hassle of complex configurations.
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-- **Customization:** Customize every aspect of the template to match your project's unique requirements, from styling to components.
+## Learn More
 
-- **Deployment-Ready:** Deploy your project swiftly to popular hosting platforms like Vercel, Netlify, AWS, or Heroku, and start reaching your audience sooner.
+To learn more about Next.js, take a look at the following resources:
 
-## Components Available in shipFast (Will add more with time)
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-- Pricing Component
-- Hero Section
-- Testimonials Component
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-# TODO
+## Deploy on Vercel
 
-- [x] Setup stripe
-- [x] Add google signin
-- [x] Setup mailer for emails
-- [ ] setup seo and sitemap functions
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+Tech Stack
+- Supabase
+- DrizzleORM
+- Stripe
+- Next
+- Tailwind
+- RadixUI (components)
+- Clerk Auth
+- Daily (call)
+- OpenAI
+- Groq
+- 

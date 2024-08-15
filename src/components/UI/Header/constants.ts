@@ -22,8 +22,8 @@ export const menu = {
 };
 export const links = [
   {
-    url: '/',
-    linkTo: 'Solutions',
+    url: '/subscription',
+    linkTo: 'Pricing',
   },
   {
     url: '/',

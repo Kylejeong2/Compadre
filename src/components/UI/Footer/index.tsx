@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import compadre_footer_logo from '../../../../public/svgs/compadre_footer_logo.svg';
 import qr_code from '../../../../public/svgs/qr_code.svg';
 import ic_google_playstore from '../../../../public/svgs/ic_google_playstore.svg';
 import ic_baseline_apple from '../../../../public/svgs/ic_baseline_apple.svg';
@@ -44,7 +43,7 @@ const Footer = () => {
     <Wrapper>
       <Inner>
         <FooterLogo>
-          <Image src={compadre_footer_logo} alt="compadre_footer_logo" />
+          <Image src="/images/logo.png" alt="Compadre logo" width={500} height={100} />
         </FooterLogo>
         <FooterMainContent>
           <FooterMiddle>
@@ -75,12 +74,12 @@ const Footer = () => {
           </FooterMiddle>
           <FooterBottom>
             <Translator>
-              <h3>English (United Kingdom)</h3>
+              <h3>English</h3>
               <Image src={ic_chevron_down} alt="chevron down" />
             </Translator>
             <CopyRight>
               <Image src={ic_copyright} alt="copyright svg" />
-              compadre Corp, LLC.
+              Compadre, LLC.
             </CopyRight>
           </FooterBottom>
         </FooterMainContent>

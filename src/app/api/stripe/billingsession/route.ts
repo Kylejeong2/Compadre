@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
 import { StatusCodes } from "http-status-codes";
 import { stripe } from "@/configs/stripe";
 import { getAuthSession } from "@/lib/auth";
-import connectDB from "@/configs/dbConfig/dbConfig";
-import Users from "@/models/user";
-import useSubscriptions from "@/hooks/useSubscriptions";
+import { clerk } from "@/configs/clerk-server";
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,12 +19,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    await connectDB();
+    const foundUser = await clerk.users.getUser(session.user.id);
 
-    const foundUser = await Users.findOne({ email: session.user.email });
+    const stripeCustomerId = foundUser.privateMetadata.stripe_customer_id as string;
 
     const sessions = await stripe.billingPortal.sessions.create({
-      customer: foundUser.stripeCustomerId,
+      customer: stripeCustomerId,
       return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/subscription`,
     });
 

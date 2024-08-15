@@ -1,13 +1,11 @@
 // For desktop
-export const phrases = ['Building the future of', 'banking.'];
+export const phrases = ['Your Best Friend'];
 export const paragraphPhrases = [
-  "Experience the future of banking with compadre. We're here to",
-  'empower your financial journey.',
+  "Never be lonely again.",
 ];
 
 // For mobile
-export const mobilePhrases = ['Building the future', 'of banking'];
+export const mobilePhrases = ['Your Best Friend'];
 export const mobileParagraphPhrases = [
-  "Experience the future of banking with compadre. We're",
-  'here to empower your financial journey.',
+  "Never be lonely again.",
 ];

@@ -3,8 +3,7 @@ import Stripe from "stripe";
 import { StatusCodes } from "http-status-codes";
 import { stripe } from "@/configs/stripe";
 import { getAuthSession } from "@/lib/auth";
-import connectDB from "@/configs/dbConfig/dbConfig";
-import Users from "@/models/user";
+import { clerk } from "@/configs/clerk-server";
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,11 +20,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await connectDB();
+    const foundUser = await clerk.users.getUser(session.user.id);
 
-    const foundUser = await Users.findOne({ email: session.user.email });
+    if (!foundUser) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: StatusCodes.NOT_FOUND }
+      );
+    }
 
-    const subscriptionId = foundUser.subscriptionId;
+    const subscriptionId = foundUser.privateMetadata.stripe_subscription_id;
+
+    if (typeof subscriptionId !== 'string') {
+      throw new Error('Invalid subscription ID');
+    }
 
     const sessions = await stripe.subscriptions.update(subscriptionId, {
       cancel_at_period_end: true,

@@ -13,11 +13,12 @@ export const Wrapper = styled.section`
 
 export const Inner = styled.div`
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  width: 90%;
-  max-width: 1440px;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 0 1rem;
 `;
 
 export const LogoContainer = styled.div`
@@ -55,12 +56,12 @@ export const BurgerMenu = styled.div`
   }
 `;
 
-export const Nav = styled.div`
+export const Nav = styled.nav`
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 3.75rem;
-  position: relative;
-  margin-right: -6.3rem;
+  flex-grow: 1;
+  gap: 2rem;
 
   a {
     color: var(--link-color);

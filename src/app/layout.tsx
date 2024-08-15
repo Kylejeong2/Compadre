@@ -2,7 +2,9 @@ import { ClerkProvider } from '@clerk/nextjs'
 import "./globals.css";
 import type { Metadata } from "next";
 import { Poppins, Inter } from "next/font/google";
+import Provider from "@/components/Layout/Provider";
 import Layout from "@/components/Layout";
+import { PreloaderProvider } from "@/context/PreloaderContext";
 
 const inter = Inter({ subsets: ["latin"] });
 // const poppins = Poppins({
@@ -23,11 +25,15 @@ export default function RootLayout({
   return (
     <ClerkProvider afterSignOutUrl="/">
       <html lang="en">
-        <body className={inter.className}>
-          <Layout>
-            {children}
-          </Layout>
-        </body>
+        <Provider>
+          <body className={inter.className}>
+            <PreloaderProvider>
+              <Layout>
+                {children}
+              </Layout>
+            </PreloaderProvider>
+          </body>
+        </Provider>
       </html>
     </ClerkProvider>
   );

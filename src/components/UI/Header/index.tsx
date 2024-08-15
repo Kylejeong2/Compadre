@@ -10,21 +10,22 @@ import {
   AbsoluteLinks,
   BurgerMenu,
 } from './styles';
-import compadre_logo from '../../../../public/svgs/compadre_logo.svg';
 import ic_bars from '../../../../public/svgs/ic_bars.svg';
 import { GetStartedButton } from '@/components';
 import AnimatedLink from '@/components/Common/AnimatedLink';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { links, menu } from './constants';
+import Link from 'next/link';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <Wrapper>
       <Inner>
+        <Link href="/">
         <LogoContainer>
-          <Image src={compadre_logo} alt="compadre_logo" priority />
+          <Image src="/images/logo.png" alt="compadre_logo" width={140} height={30} priority />
           <BurgerMenu onClick={() => setIsOpen(!isOpen)}>
             <motion.div
               variants={menu}
@@ -34,13 +35,18 @@ const Header = () => {
             <Image src={ic_bars} alt="bars" />
           </BurgerMenu>
         </LogoContainer>
+        </Link>
         <Nav className={isOpen ? 'active' : ''}>
           {links.map((link, i) => (
-            <AnimatedLink key={i} title={link.linkTo} />
+            <Link href={link.url} key={i}>
+              <AnimatedLink key={i} title={link.linkTo} />
+            </Link>
           ))}
         </Nav>
         <CallToActions className={isOpen ? 'active' : ''}>
-          <AnimatedLink title="Login" />
+          <Link href="/dashboard">
+            <AnimatedLink title="Login" />
+          </Link>
           <GetStartedButton padding="0.5rem 0.75rem" />
         </CallToActions>
       </Inner>

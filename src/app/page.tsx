@@ -14,11 +14,11 @@ export default function Home() {
     <main>
       <HeroSection />
       <Featured />
-      <OffersSection />
-      <FinancialFreedom />
-      <FinancialFuture />
-      <IntroSection />
-      <JoinSection />
+      {/* <OffersSection /> */}
+      {/* <FinancialFreedom /> */}
+      {/* <FinancialFuture />
+      <IntroSection /> */}
+      {/* <JoinSection /> */}
       <FAQ />
     </main>
   );

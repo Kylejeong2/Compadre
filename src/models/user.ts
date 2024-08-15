@@ -1,27 +1,10 @@
-import mongoose from "mongoose";
+import { User } from "@clerk/nextjs/server";
 
-const userSchema = new mongoose.Schema({
-  clerkId: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  stripeCustomerId: {
-    type: String,
-    unique: true,
-  },
-  stripePriceId: {
-    type: String,
-  },
-  stripeCurrentPeriodEnd: {
-    type: String,
-  },
-  stripeSubscriptionId: {
-    type: String,
-    unique: true,
-  },
-});
+export interface ExtendedUser extends User {
+  stripeCustomerId?: string;
+  stripePriceId?: string;
+  stripeCurrentPeriodEnd?: Date;
+  stripeSubscriptionId?: string;
+}
 
-const Users = mongoose.models.users || mongoose.model("users", userSchema);
-
-export default Users;
+export default ExtendedUser;

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/Common/Button";
 import getStripe from "@/configs/stripe";
 interface ManageUserSubscriptionButtonProps {
   userId: string;
@@ -11,12 +11,7 @@ interface ManageUserSubscriptionButtonProps {
   stripePriceId: string;
 }
 const PlanManageButton = ({
-  userId,
-  email,
-  isCurrentPlan,
-  isSubscribed,
-  stripeCustomerId,
-  stripePriceId,
+  userId, email, isCurrentPlan, isSubscribed, stripeCustomerId, stripePriceId,
 }: ManageUserSubscriptionButtonProps) => {
   const onManageSubscription = async () => {
     try {
