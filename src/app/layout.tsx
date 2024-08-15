@@ -1,17 +1,13 @@
 import { ClerkProvider } from '@clerk/nextjs'
 import "./globals.css";
 import type { Metadata } from "next";
-import { Poppins, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import Provider from "@/components/Layout/Provider";
 import Layout from "@/components/Layout";
 import { PreloaderProvider } from "@/components/Layout/PreloaderContext";
 import { ThemeProvider } from "@/components/Layout/Theme-Provider";
 
 const inter = Inter({ subsets: ["latin"] });
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-});
 
 export const metadata: Metadata = {
   title: "Compadre",
