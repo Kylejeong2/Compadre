@@ -1,21 +1,23 @@
-import { auth } from "@clerk/nextjs/server";
+import { clerk } from "@/configs/clerk-server";
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { $compadres } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
-import useSubscriptions from "@/hooks/useSubscriptions";
 
-export async function GET() {
-    const { userId } = auth();
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+
     if (!userId) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
     }
 
-    const subscriptionPlan = await useSubscriptions();
-    const compadres = await db.select().from($compadres).where(eq($compadres.userId, userId));
+    const user = await clerk.users.getUser(userId);
+    
+    // Check the user's metadata or make a call to your Stripe API to verify subscription
+    const hasSubscription = user.publicMetadata.hasSubscription === true;
 
-    return NextResponse.json({
-        isSubscribed: subscriptionPlan.isSubscribed,
-        compadreCount: compadres.length
-    });
+    return NextResponse.json({ hasSubscription });
+  } catch (error) {
+    console.error("Error checking subscription:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }

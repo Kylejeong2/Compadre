@@ -17,7 +17,7 @@ const DashboardPage = async (props: Props) => {
     const compadres = await db.select().from($compadres).where(
         eq($compadres.userId, userId!)
     )
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stripe/checkSubscription`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stripe/checkSubscription?userId=${userId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const DashboardPage = async (props: Props) => {
                     {/* <!-- conditional rendering --> */}
                     {compadres.length === 0 && (
                         <div className='text-center'>
-                            <h2 className='text-xl text-gray-500'>You don't have any Compadres yet!</h2>
+                            <h2 className='text-xl text-gray-500'>You don&apos;t have any Compadres yet!</h2>
                         </div>
                     )}
                     
@@ -85,7 +85,7 @@ const DashboardPage = async (props: Props) => {
                     </div>
                     {compadres.length === 1 && !isSubscribed && (
                     <div className='mt-8 p-4 bg-yellow-100 rounded-lg'>
-                        <p className='text-yellow-800'>You've created your first Compadre! Subscribe to create more.</p>
+                        <p className='text-yellow-800'>You&apos;ve created your first Compadre! Subscribe to create more.</p>
                         <Link href="/subscription">
                             <Button className="mt-2 bg-yellow-500 text-white">Subscribe Now</Button>
                         </Link>
