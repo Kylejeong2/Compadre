@@ -9,6 +9,7 @@ import { eq } from 'drizzle-orm';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
+import { cookies } from 'next/headers';
 
 type Props = {}
 
@@ -17,24 +18,19 @@ const DashboardPage = async (props: Props) => {
     const compadres = await db.select().from($compadres).where(
         eq($compadres.userId, userId!)
     )
+    
     let subbed = false;
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stripe/checkSubscription?userId=${userId}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stripe/checkSubscription`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
+                Cookie: cookies().toString(),
             },
         });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const responseText = await response.text();
-        console.log('Raw response:', responseText);
-        const { isSubscribed } = JSON.parse(responseText);
-        subbed = isSubscribed;
+        const data = await response.json();
+        subbed = data.hasSubscription;
     } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
-        // Handle the error appropriately, maybe set a default value for subbed
+        console.error('Error checking subscription:', error);
         subbed = false;
     }
 
@@ -70,39 +66,42 @@ const DashboardPage = async (props: Props) => {
                     
 
                     <div className='grid sm:grid-cols-3 md:grid-cols-5 grid-cols-1 gap-3'>
-                      {compadres.length === 1 && !subbed && (
+                      {(compadres.length < 1 || subbed) && (
                           <CreateCompadre />
                       )}
-                        {compadres.map(compadre => {
-                            return (
-                                <a href={`/compadre/${compadre.id}`} key={compadre.id}>
-                                    <div className='border border-stone-200 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition hover:-translate-y-1'>
-                                        {/* <img 
-                                            width={400}
-                                            height={200}
-                                            alt={compadre.name}
-                                            src={compadre.imageUrl || ""}
-                                        /> */}
-                                    <div className='p-4'>
-                                        <h3 className='text-xl font-semibold text-white'>{compadre.name}</h3>
-                                        <div className='h-1'></div>
-                                        <p className='text-sm text-gray-500'>
-                                            {new Date(compadre.createdAt).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                    </div>
-                                    
-                                </a>
-                            )
-                        })}
+                      {compadres.map(compadre => {
+                          return (
+                              <a href={`/compadre/${compadre.id}`} key={compadre.id}>
+                                  <div className='border border-stone-200 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition hover:-translate-y-1'>
+                                      {/* <img 
+                                          width={400}
+                                          height={200}
+                                          alt={compadre.name}
+                                          src={compadre.imageUrl || ""}
+                                      /> */}
+                                  <div className='p-4'>
+                                      <h3 className='text-xl font-semibold text-white'>{compadre.name}</h3>
+                                      <div className='h-1'></div>
+                                      <p className='text-sm text-gray-500'>
+                                          {new Date(compadre.createdAt).toLocaleDateString()}
+                                      </p>
+                                  </div>
+                                  </div>
+                                  
+                              </a>
+                          )
+                      })}
                     </div>
-                    {compadres.length === 1 && !subbed && (
-                    <div className='mt-8 p-4 bg-yellow-100 rounded-lg'>
-                        <p className='text-yellow-800'>You&apos;ve created your first Compadre! Subscribe to create more.</p>
+                    {compadres.length >= 1 && !subbed && (
+                      <div className='mt-8 p-6 bg-gray-800 rounded-lg border border-gray-700 shadow-lg max-w-lg mx-auto'>
+                        <h3 className='text-xl font-semibold text-white mb-2'>Unlock More Compadres!</h3>
+                        <p className='text-gray-300 mb-4'>You've created your first Compadre. Subscribe now to create unlimited Compadres and access premium features.</p>
                         <Link href="/subscription">
-                            <Button className="mt-2 bg-yellow-500 text-white">Subscribe Now</Button>
+                          <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105">
+                            Upgrade to Premium
+                          </Button>
                         </Link>
-                    </div>
+                      </div>
                     )}
                 </div>
             </div>

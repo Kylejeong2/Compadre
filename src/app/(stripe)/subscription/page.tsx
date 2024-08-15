@@ -66,8 +66,12 @@ const PricingCard = ({ isYearly, title, monthlyPrice, yearlyPrice, description, 
           <CardTitle className="text-zinc-700 dark:text-zinc-300 text-lg">{title}</CardTitle>
         )}
         <div className="flex gap-0.5">
-          <h3 className="text-3xl font-bold">{yearlyPrice && isYearly ? "$" + yearlyPrice : monthlyPrice ? "$" + monthlyPrice : "Custom"}</h3>
-          <span className="flex flex-col justify-end text-sm mb-1">{yearlyPrice && isYearly ? "/year" : monthlyPrice ? "/month" : null}</span>
+          <h3 className="text-3xl font-bold">
+            {yearlyPrice && isYearly ? "$" + yearlyPrice : monthlyPrice !== undefined ? "$" + monthlyPrice : "Custom"}
+          </h3>
+          <span className="flex flex-col justify-end text-sm mb-1">
+            {yearlyPrice && isYearly ? "/year" : monthlyPrice !== undefined ? "/month" : null}
+          </span>
         </div>
         <CardDescription className="pt-1.5 h-12">{description}</CardDescription>
       </CardHeader>
@@ -99,10 +103,18 @@ export default function SubscriptionPage() {
 
   const plans = [
     {
+      title: "Free",
+      monthlyPrice: 0,
+      yearlyPrice: 0,
+      description: "Everything you need to get started",
+      features: ["Example Feature Number 1", "Example Feature Number 2", "Example Feature Number 3"],
+      actionLabel: "Get Started",
+    },
+    {
       title: "Basic",
       monthlyPrice: 10,
       yearlyPrice: 100,
-      description: "Essential features you need to get started",
+      description: "Want a few more Compadres?",
       features: ["Example Feature Number 1", "Example Feature Number 2", "Example Feature Number 3"],
       actionLabel: "Get Started",
     },
@@ -110,25 +122,27 @@ export default function SubscriptionPage() {
       title: "Pro",
       monthlyPrice: 25,
       yearlyPrice: 250,
-      description: "Perfect for owners of small & medium businessess",
+      description: "Full group of Compadres.",
       features: ["Example Feature Number 1", "Example Feature Number 2", "Example Feature Number 3"],
       actionLabel: "Get Started",
       popular: true,
     },
-    {
-      title: "Enterprise",
-      price: "Custom",
-      description: "Dedicated support and infrastructure to fit your needs",
-      features: ["Example Feature Number 1", "Example Feature Number 2", "Example Feature Number 3", "Super Exclusive Feature"],
-      actionLabel: "Contact Sales",
-      exclusive: true,
-    },
+    // {
+    //   title: "Enterprise",
+    //   price: "Custom",
+    //   description: "Compadres for teams.",
+    //   features: ["Example Feature Number 1", "Example Feature Number 2", "Example Feature Number 3", "Super Exclusive Feature"],
+    //   actionLabel: "Contact Sales",
+    //   exclusive: true,
+    // },
   ]
 
   return (
-    <div className="py-8">
-      <PricingHeader title="Pricing Plans" subtitle="Choose the plan that's right for you" />
-      <PricingSwitch onSwitch={togglePricingPeriod} />
+    <div className="flex flex-col py-8 h-screen">
+      <div className="flex flex-col items-center">
+        <PricingHeader title="Pricing Plans" subtitle="Choose the plan that's right for you" />
+        <PricingSwitch onSwitch={togglePricingPeriod} />
+      </div>
       <section className="flex flex-col sm:flex-row sm:flex-wrap justify-center gap-8 mt-8">
         {plans.map((plan) => {
           return <PricingCard key={plan.title} {...plan} isYearly={isYearly} />

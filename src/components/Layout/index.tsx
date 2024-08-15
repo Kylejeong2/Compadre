@@ -5,7 +5,7 @@ import StyledComponentsRegistry from '@/lib/registry';
 import { GlobalStyles } from './GlobalStyles';
 import { Footer, Header, Preloader } from '..';
 import { useState, useEffect } from 'react';
-import { usePreloader } from '@/context/PreloaderContext';
+import { usePreloader } from '@/components/Layout/PreloaderContext';
 import { usePathname } from 'next/navigation';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {

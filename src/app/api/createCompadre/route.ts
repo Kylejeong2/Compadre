@@ -12,6 +12,8 @@ export async function POST(req: Request) {
     }
     const body = await req.json()
     const { name } = body;
+    const { characteristics } = body;
+
     // const image_description = await generateImagePrompt(name);
 
     // if(!image_description){
@@ -33,6 +35,7 @@ export async function POST(req: Request) {
     const compadre_ids = await db.insert($compadres).values({
         name,
         userId,
+        characteristics,
         // imageUrl: image_url,
     }).returning({
         insertedId: $compadres.id

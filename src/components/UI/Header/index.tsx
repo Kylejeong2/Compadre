@@ -22,35 +22,33 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <Wrapper>
-      <Inner>
-        <Link href="/">
-        <LogoContainer>
-          <Image src="/images/logo.png" alt="compadre_logo" width={140} height={30} priority />
-          <BurgerMenu onClick={() => setIsOpen(!isOpen)}>
-            <motion.div
-              variants={menu}
-              animate={isOpen ? 'open' : 'closed'}
-              initial="closed"
-            ></motion.div>
-            <Image src={ic_bars} alt="bars" />
-          </BurgerMenu>
-        </LogoContainer>
+      <Inner className="flex items-center justify-between">
+        <Link href="/" className="flex-shrink-0">
+          <LogoContainer className="flex items-center">
+            <Image src="/images/logo.png" alt="compadre_logo" width={140} height={30} priority />
+            <BurgerMenu onClick={() => setIsOpen(!isOpen)} className="ml-4 md:hidden">
+              <motion.div
+                variants={menu}
+                animate={isOpen ? 'open' : 'closed'}
+                initial="closed"
+              ></motion.div>
+              <Image src={ic_bars} alt="bars" />
+            </BurgerMenu>
+          </LogoContainer>
         </Link>
-        <Nav className={isOpen ? 'active' : ''}>
+        <Nav className={`flex-grow justify-center ${isOpen ? 'active' : 'hidden md:flex'}`}>
           {links.map((link, i) => (
-            <Link href={link.url} key={i}>
+            <Link href={link.url} key={i} className="mx-4">
               <AnimatedLink key={i} title={link.linkTo} />
             </Link>
           ))}
         </Nav>
-        <CallToActions className={isOpen ? 'active' : ''}>
-          <Link href="/dashboard">
+        <CallToActions className={`flex items-center ${isOpen ? 'active' : 'hidden md:flex'}`}>
+          <Link href="/dashboard" className="mr-4">
             <AnimatedLink title="Login" />
           </Link>
           <GetStartedButton padding="0.5rem 0.75rem" />
         </CallToActions>
-        <div className="flex m-4 items-center justify-center">
-        </div>
       </Inner>
     </Wrapper>
   );
