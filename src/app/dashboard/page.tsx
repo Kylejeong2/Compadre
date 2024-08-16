@@ -95,8 +95,7 @@ const DashboardPage = async (props: Props) => {
                     {compadres.length >= 1 && !subbed && (
                       <div className='mt-8 p-6 bg-gray-800 rounded-lg border border-gray-700 shadow-lg max-w-lg mx-auto'>
                         <h3 className='text-xl font-semibold text-white mb-2'>Unlock More Compadres!</h3>
-                        <p className='text-gray-300 mb-4'>You've created your first Compadre. Subscribe now to create unlimited Compadres and access premium features.</p>
-                        <Link href="/subscription">
+                        <p className="text-gray-300 mb-4">You&apos;ve created your first Compadre. Subscribe now to create unlimited Compadres and access premium features.</p>                        <Link href="/subscription">
                           <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105">
                             Upgrade to Premium
                           </Button>
