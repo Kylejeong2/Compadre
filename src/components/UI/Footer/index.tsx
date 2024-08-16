@@ -43,13 +43,7 @@ const Footer = () => {
     <Wrapper>
       <Inner>
         <FooterLogo>
-          <Image 
-            src="/images/logo.png" 
-            alt="Compadre logo" 
-            width={200} 
-            height={40} 
-            style={{ width: '100%', height: 'auto' }}
-          />
+          <Image src="/images/logo.png" alt="Compadre logo" width={500} height={100} style={{ width: '500px', height: '100px' }} />
         </FooterLogo>
         <FooterMainContent>
           <FooterMiddle>

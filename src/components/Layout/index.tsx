@@ -33,7 +33,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       console.log('Setting complete to true');
       setComplete(true);
     }
-  }, [pathname, hasPreloaded]);
+  }, [pathname, hasPreloaded, isMobile]);
 
   const handlePreloaderComplete = () => {
     setComplete(true);
