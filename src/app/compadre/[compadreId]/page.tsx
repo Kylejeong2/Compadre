@@ -8,6 +8,7 @@ import { and, eq } from 'drizzle-orm';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React from 'react'
+import { CompadreTitleBar } from '@/components/Compadre/CompadreTitleBar';
 
 type Props = {
     params: {
@@ -17,11 +18,19 @@ type Props = {
 
 const CompadrePage = async ({params: { compadreId }}: Props) => {
     const {userId} = await auth()
+    
     if (!userId){
         return redirect('/dashboard');
     }
 
-    const user = clerk.users.getUser(userId);
+    const user = await clerk.users.getUser(userId);
+
+    // passed to client components
+    const serializedUser = user ? { // can add more properties needed to pass as needed
+        id: user.id, 
+        firstName: user.firstName,
+        lastName: user.lastName,
+      } : null; 
 
     const compadres = await db.select().from($compadres).where(
         and(
@@ -35,36 +44,18 @@ const CompadrePage = async ({params: { compadreId }}: Props) => {
 
     const compadre = compadres[0];
 
-  return (
-    <div className='min-h-screen grainy p-8'>
-        <div className='max-w-4xl mx-auto'>
-            <div className='border shadow-xl border-stone-200 rounded-lg p-4 flex items-center'>
-                <Link href="/dashboard" replace>
-                    <Button className="bg-green-600" size="sm">
-                        Back
-                    </Button>
-                </Link>
-                <div className="w-3"></div>
-                <span className='font-semibold'>
-                    {(await user).firstName} {(await user).lastName}
-                </span>
-                <span className='inline-block mx-1'>/</span>
-                <span className='text-stone-500 font-semibold'>
-                    {compadre.name}
-                </span>
-                <div className="ml-auto">
-                    <DeleteButton compadreId={compadre.id}/>
+    return (
+        <div className='min-h-screen grainy p-8'>
+            <div className='max-w-6xl mx-auto'>
+                <CompadreTitleBar compadre={compadre} user={serializedUser}/>
+
+                <div className="h-4"></div>
+                <div className='border-stone-200 shadow-xl border rounded-lg px-16 py-8 w-full'>
+                    CONTENT HERE
                 </div>
             </div>
-
-            <div className="h-4"></div>
-            <div className='border-stone-200 shadow-xl border rounded-lg px-16 py-8 w-full'>
-                CONTENT HERE
-            </div>
-            
         </div>
-    </div>
-  )
+    )
 }
 
 export default CompadrePage;

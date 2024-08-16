@@ -58,7 +58,7 @@ const CreateCompadre = (props: Props) => { // don't let unsubbed make more than 
             onSuccess: (data) => {
                 if (data && data.compadre_id) {
                     console.log("Compadre Created", { compadre_id: data.compadre_id })
-                    router.push(`/compadre/${data.compadre_id}`)
+                    router.push(`/compadre/${data.compadre_id}`);
                 } else {
                     console.error("Compadre created, but no ID returned")
                     window.alert("Compadre created, but there was an issue. Please try again.")

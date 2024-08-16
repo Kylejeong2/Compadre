@@ -1,47 +1,61 @@
 import { db } from "@/lib/db";
 import { $compadres } from "@/lib/db/schema";
-// import { generateImage, generateImagePrompt } from "@/lib/openai";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import axios from "axios";
+
+async function createDailyRoom(compadreName: string): Promise<string> {
+  try {
+    const response = await axios.post(
+      "https://api.daily.co/v1/rooms",
+      { name: `compadre-${compadreName}-${Date.now()}` },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.DAILY_API_KEY}`,
+        },
+      }
+    );
+    return response.data.url;
+  } catch (error) {
+    console.error("Error creating Daily room:", error);
+    throw new Error("Failed to create chatroom");
+  }
+}
 
 export async function POST(req: Request) {
-    const { userId } = auth();
+  const { userId } = auth();
 
-    if (!userId) {
-        return new NextResponse('unauthorized', {status: 401})
-    }
-    const body = await req.json()
-    const { name } = body;
-    const { characteristics } = body;
+  if (!userId) {
+    return new NextResponse("unauthorized", { status: 401 });
+  }
 
-    // const image_description = await generateImagePrompt(name);
+  const body = await req.json();
+  const { name, characteristics } = body;
 
-    // if(!image_description){
-    //     return new NextResponse("Failed to generate image description",{
-    //         status: 500,
-    //     })
-    // }
+  try {
+    const roomUrl = await createDailyRoom(name);
 
-    // const image_url = await generateImage(image_description);
-
-    // if (!image_url){
-    //     return new NextResponse(
-    //         "Failed to generate image", {
-    //             status: 500,
-    //         }
-    //     );
-    // }
-
-    const compadre_ids = await db.insert($compadres).values({
+    const compadre_ids = await db
+      .insert($compadres)
+      .values({
         name,
         userId,
         characteristics,
-        // imageUrl: image_url,
-    }).returning({
-        insertedId: $compadres.id
-    })
+        roomUrl,
+      })
+      .returning({
+        insertedId: $compadres.id,
+      });
 
     return NextResponse.json({
-        compadre_id: compadre_ids[0].insertedId,
+      compadre_id: compadre_ids[0].insertedId,
+      room_url: roomUrl,
     });
+  } catch (error) {
+    console.error("Error creating compadre and chatroom:", error);
+    return new NextResponse("Failed to create compadre and chatroom", {
+      status: 500,
+    });
+  }
 }

@@ -12,7 +12,18 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const [complete, setComplete] = useState(false);
   const { hasPreloaded, setHasPreloaded } = usePreloader();
   const pathname = usePathname();
-  const isMobile = window.innerWidth <= 768; // Adjust this breakpoint as needed
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (pathname === '/' && !hasPreloaded && !isMobile) {
