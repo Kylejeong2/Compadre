@@ -44,7 +44,7 @@ const CompadrePage = async ({params: { compadreId }}: Props) => {
     const characteristicsArray = Array.isArray(compadre.characteristics)
         ? compadre.characteristics
         : typeof compadre.characteristics === 'string'
-            ? compadre.characteristics.split(',')
+            ? (compadre.characteristics as string).split(',')
             : [];
 
     return (
@@ -61,7 +61,7 @@ const CompadrePage = async ({params: { compadreId }}: Props) => {
                         user={serializedUser}
                         compadreName={compadre.name}
                         compadreId={compadre.id} 
-                        characteristics={characteristicsArray}
+                        characteristics={characteristicsArray.join(',')}
                     />
                 </div>
             </div>
