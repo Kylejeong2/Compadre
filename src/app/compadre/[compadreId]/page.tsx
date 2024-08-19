@@ -1,5 +1,3 @@
-import DeleteButton from '@/components/Common/DeleteButton';
-import { Button } from '@/components/Common/Button';
 import { clerk } from '@/configs/clerk-server';
 import { db } from '@/lib/db';
 import { $compadres } from '@/lib/db/schema';
@@ -9,6 +7,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React from 'react'
 import { CompadreTitleBar } from '@/components/Compadre/CompadreTitleBar';
+import { ChatInterface } from '@/components/Compadre/ChatInterface';
 
 type Props = {
     params: {
@@ -25,12 +24,11 @@ const CompadrePage = async ({params: { compadreId }}: Props) => {
 
     const user = await clerk.users.getUser(userId);
 
-    // passed to client components
-    const serializedUser = user ? { // can add more properties needed to pass as needed
+    const serializedUser = user ? {
         id: user.id, 
         firstName: user.firstName,
         lastName: user.lastName,
-      } : null; 
+    } : null; 
 
     const compadres = await db.select().from($compadres).where(
         and(
@@ -43,15 +41,28 @@ const CompadrePage = async ({params: { compadreId }}: Props) => {
     }
 
     const compadre = compadres[0];
+    const characteristicsArray = Array.isArray(compadre.characteristics)
+        ? compadre.characteristics
+        : typeof compadre.characteristics === 'string'
+            ? compadre.characteristics.split(',')
+            : [];
 
     return (
         <div className='min-h-screen grainy p-8'>
             <div className='max-w-6xl mx-auto'>
-                <CompadreTitleBar compadre={compadre} user={serializedUser}/>
+                <CompadreTitleBar 
+                    compadre={{...compadre, characteristics: characteristicsArray}} 
+                    user={serializedUser}
+                />
 
                 <div className="h-4"></div>
                 <div className='border-stone-200 shadow-xl border rounded-lg px-16 py-8 w-full'>
-                    CONTENT HERE
+                    <ChatInterface 
+                        user={serializedUser}
+                        compadreName={compadre.name}
+                        compadreId={compadre.id} 
+                        characteristics={characteristicsArray}
+                    />
                 </div>
             </div>
         </div>

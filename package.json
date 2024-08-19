@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^0.0.48",
     "@auth/mongodb-adapter": "^2.0.0",
     "@clerk/nextjs": "^5.3.1",
     "@motionone/utils": "^10.16.3",
@@ -23,6 +24,7 @@
     "@supabase/supabase-js": "^2.45.1",
     "@tanstack/react-query": "^5.51.23",
     "@vercel/postgres": "^0.9.0",
+    "ai": "^3.3.9",
     "autoprefixer": "10.4.15",
     "axios": "^1.5.0",
     "bcryptjs": "^2.4.3",
@@ -36,6 +38,7 @@
     "install": "^0.13.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.279.0",
+    "mem0ai": "^1.0.4",
     "mongodb": "^6.0.0",
     "mongoose": "^7.5.0",
     "next": "13.5.4",
@@ -43,6 +46,7 @@
     "next-themes": "^0.3.0",
     "nodemailer": "^6.9.5",
     "npm": "^10.8.2",
+    "openai": "^4.56.0",
     "postcss": "^8.4.41",
     "postgres": "^3.4.4",
     "react": "^18",

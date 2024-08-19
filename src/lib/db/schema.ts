@@ -7,10 +7,9 @@ export const $compadres = pgTable('compadres', {
     id: uuid('id').primaryKey().defaultRandom(),
     name: text('name').notNull(),
     characteristics: text('characteristics').array().notNull().default(sql`ARRAY[]::text[]`),
-    roomUrl: text('room').notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     imageUrl: text('imageUrl'),
-    userId: text('user_id').notNull(), // TODO: add Mem0 stuff + daily room
+    userId: text('user_id').notNull(), // TODO: add daily room
 });
 
 export type CompadreType = typeof $compadres.$inferInsert;
