@@ -1,26 +1,30 @@
 import { auth } from "@clerk/nextjs/server";
 import { clerk } from "@/configs/clerk-server";
 import { storeSubscriptionPlans, stripe } from "@/configs/stripe";
+import { NextResponse } from "next/server";
 
-const useSubscriptions = async () => {
+export async function GET() {
   const { userId } = auth();
 
   if (!userId) {
-    throw new Error("User not found.");
+    return NextResponse.json({ error: "User not found" }, { status: 401 });
   }
 
   const user = await clerk.users.getUser(userId);
 
   if (!user) {
-    throw new Error("User not found.");
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
   const stripeCustomerId = user.privateMetadata.stripeCustomerId as string | undefined;
   const stripePriceId = user.privateMetadata.stripePriceId as string | undefined;
   const stripeSubscriptionId = user.privateMetadata.stripeSubscriptionId as string | undefined;
   const stripeCurrentPeriodEnd = user.privateMetadata.stripeCurrentPeriodEnd as string | undefined;
-
+  const subscriptionName = user.privateMetadata.subscriptionName as string | undefined;
   const isSubscribed = stripePriceId && stripeCurrentPeriodEnd && new Date(stripeCurrentPeriodEnd).getTime() + 86_400_000 > Date.now();
+  const isYearly = user.privateMetadata.isYearly as boolean | undefined;
+  const subscriptionCancelAt = user.privateMetadata.subscriptionCancelAt as string | undefined;
+  const subscriptionStatus = user.privateMetadata.subscriptionStatus as string | undefined;
 
   const plan = isSubscribed
     ? storeSubscriptionPlans.find(
@@ -34,14 +38,16 @@ const useSubscriptions = async () => {
     isCanceled = stripePlan.cancel_at_period_end;
   }
 
-  return {
+  return NextResponse.json({
     ...plan,
+    subscriptionName,
     stripeSubscriptionId,
     stripeCurrentPeriodEnd,
     stripeCustomerId,
     isSubscribed,
     isCanceled,
-  };
-};
-
-export default useSubscriptions;
+    subscriptionCancelAt,
+    subscriptionStatus,
+    isYearly,
+  });
+}

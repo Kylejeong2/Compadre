@@ -17,15 +17,21 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { links, menu } from './constants';
 import Link from 'next/link';
+import { useUser } from '@clerk/nextjs';
+import { UserButton } from '@clerk/nextjs';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { isSignedIn, user } = useUser();
+
   return (
     <Wrapper>
       <Inner className="flex items-center justify-between">
-        <div className="flex items-center justify-between w-full md:w-auto">
+        <div className="flex items-center">
           <Link href="/" className="flex-shrink-0">
-            <Image src="/images/logo.png" alt="compadre_logo" width={140} height={30} priority />
+            <LogoContainer className="flex items-center">
+              <Image src="/images/logo.png" alt="compadre_logo" width={140} height={30} priority />
+            </LogoContainer>
           </Link>
           <BurgerMenu onClick={() => setIsOpen(!isOpen)} className="ml-4 md:hidden">
             <motion.div
@@ -36,18 +42,29 @@ const Header = () => {
             <Image src={ic_bars} alt="bars" />
           </BurgerMenu>
         </div>
-        <Nav className={`flex-grow justify-center ${isOpen ? 'active' : 'hidden md:flex'}`}>
+        <Nav className={`items-center justify-center ${isOpen ? 'flex' : 'hidden md:flex'}`}>
           {links.map((link, i) => (
             <Link href={link.url} key={i} className="mx-4">
               <AnimatedLink key={i} title={link.linkTo} />
             </Link>
           ))}
         </Nav>
-        <CallToActions className={`flex items-center ${isOpen ? 'active' : 'hidden md:flex'}`}>
-          <Link href="/dashboard" className="mr-4">
-            <AnimatedLink title="Login" />
-          </Link>
-          <GetStartedButton padding="0.5rem 0.75rem" />
+        <CallToActions className={`items-center ${isOpen ? 'flex' : 'hidden md:flex'}`}>
+          {isSignedIn ? (
+            <>
+              <Link href={`/dashboard/profile/${user?.id}`} className="mr-4">
+                <AnimatedLink title="Profile" />
+              </Link>
+              <UserButton />
+            </>
+          ) : (
+            <>
+              <Link href="/sign-in" className="mr-4">
+                <AnimatedLink title="Login" />
+              </Link>
+              <GetStartedButton padding="0.5rem 0.75rem" />
+            </>
+          )}
         </CallToActions>
       </Inner>
     </Wrapper>

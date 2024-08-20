@@ -12,8 +12,8 @@ export async function GET(request: Request) {
 
     const user = await clerk.users.getUser(userId);
     
-    // Check the user's metadata or make a call to your Stripe API to verify subscription
-    const hasSubscription = (user.publicMetadata.hasSubscription === true);
+    // Check the user's metadata for subscription status and type
+    const hasSubscription = user.publicMetadata.hasSubscription === true;
 
     return NextResponse.json({ hasSubscription });
 

@@ -2,10 +2,15 @@
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/Common/Tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/Common/Card"
-import { CheckCircle2 } from "lucide-react"
+import { CheckCircle2, Loader2 } from "lucide-react"
 import { Button } from "@/components/Common/Button"
 import React, { useState } from "react"
 import { cn } from "@/lib/utils"
+import { useRouter } from 'next/navigation'
+import { useUser } from "@clerk/nextjs";
+import { loadStripe } from '@stripe/stripe-js';
+import useSubscriptions from "@/hooks/getSubscriptionData";
+import { toast } from 'react-hot-toast'; // Assuming you're using react-hot-toast for notifications
 
 type PricingSwitchProps = {
   onSwitch: (value: string) => void
@@ -21,6 +26,9 @@ type PricingCardProps = {
   actionLabel: string
   popular?: boolean
   exclusive?: boolean
+  onSubscribe: () => void
+  isCurrentPlan?: boolean
+  disabled?: boolean
 }
 
 const PricingHeader = ({ title, subtitle }: { title: string; subtitle: string }) => (
@@ -44,7 +52,7 @@ const PricingSwitch = ({ onSwitch }: PricingSwitchProps) => (
   </Tabs>
 )
 
-const PricingCard = ({ isYearly, title, monthlyPrice, yearlyPrice, description, features, actionLabel, popular, exclusive }: PricingCardProps) => (
+const PricingCard = ({ isYearly, title, monthlyPrice, yearlyPrice, description, features, actionLabel, popular, exclusive, onSubscribe, isCurrentPlan, disabled }: PricingCardProps) => (
   <Card
     className={cn(`w-72 flex flex-col justify-between py-1 ${popular ? "border-rose-400" : "border-zinc-700"} mx-auto sm:mx-0`, {
       "animate-background-shine bg-white dark:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] transition-colors":
@@ -82,9 +90,17 @@ const PricingCard = ({ isYearly, title, monthlyPrice, yearlyPrice, description, 
       </CardContent>
     </div>
     <CardFooter className="mt-2">
-      <Button className="relative inline-flex w-full items-center justify-center rounded-md bg-black text-white dark:bg-white px-6 font-medium  dark:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
-        <div className="absolute -inset-0.5 -z-10 rounded-lg bg-gradient-to-b from-[#c7d2fe] to-[#8678f9] opacity-75 blur" />
-        {actionLabel}
+      <Button
+        className={cn(
+          "relative inline-flex w-full items-center justify-center rounded-md px-6 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50",
+          isCurrentPlan
+            ? "bg-gray-400 text-white cursor-not-allowed"
+            : "bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200"
+        )}
+        onClick={onSubscribe}
+        disabled={disabled}
+      >
+        {isCurrentPlan ? 'Current Plan' : actionLabel}
       </Button>
     </CardFooter>
   </Card>
@@ -100,6 +116,56 @@ const CheckItem = ({ text }: { text: string }) => (
 export default function SubscriptionPage() {
   const [isYearly, setIsYearly] = useState(false)
   const togglePricingPeriod = (value: string) => setIsYearly(parseInt(value) === 1)
+  const router = useRouter()
+  const { user } = useUser()
+  const { subscription, loading, error } = useSubscriptions()
+
+  const handleSubscribe = async (plan: string, price: number) => {
+    if (!user) {
+      router.push('/sign-in')
+      return
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+    const stripePk = process.env.NEXT_PUBLIC_STRIPE_PK
+
+    if (!baseUrl || !stripePk) {
+      console.error('Missing environment variables')
+      toast.error('Configuration error. Please contact support.')
+      return
+    }
+
+    try {
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          plan,
+          price,
+          isYearly,
+          userId: user.id,
+          successUrl: `${baseUrl}/dashboard/profile/${user.id}`,
+          cancelUrl: `${baseUrl}/subscription`,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session')
+      }
+
+      const { sessionId } = await response.json()
+      const stripe = await loadStripe(stripePk)
+      if (!stripe) {
+        throw new Error('Failed to load Stripe')
+      }
+      await stripe.redirectToCheckout({ sessionId })
+    } catch (error) {
+      console.error('Error creating checkout session:', error)
+      toast.error('Failed to start checkout. Please try again.')
+    }
+  }
 
   const plans = [
     {
@@ -116,7 +182,7 @@ export default function SubscriptionPage() {
       yearlyPrice: 100,
       description: "Want a few more Compadres?",
       features: ["Example Feature Number 1", "Example Feature Number 2", "Example Feature Number 3"],
-      actionLabel: "Get Started",
+      actionLabel: "Subscribe",
     },
     {
       title: "Pro",
@@ -124,18 +190,22 @@ export default function SubscriptionPage() {
       yearlyPrice: 250,
       description: "Full group of Compadres.",
       features: ["Example Feature Number 1", "Example Feature Number 2", "Example Feature Number 3"],
-      actionLabel: "Get Started",
+      actionLabel: "Subscribe",
       popular: true,
     },
-    // {
-    //   title: "Enterprise",
-    //   price: "Custom",
-    //   description: "Compadres for teams.",
-    //   features: ["Example Feature Number 1", "Example Feature Number 2", "Example Feature Number 3", "Super Exclusive Feature"],
-    //   actionLabel: "Contact Sales",
-    //   exclusive: true,
-    // },
   ]
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>
+  }
 
   return (
     <div className="flex flex-col py-8 h-screen">
@@ -144,10 +214,23 @@ export default function SubscriptionPage() {
         <PricingSwitch onSwitch={togglePricingPeriod} />
       </div>
       <section className="flex flex-col sm:flex-row sm:flex-wrap justify-center gap-8 mt-8">
-        {plans.map((plan) => {
-          return <PricingCard key={plan.title} {...plan} isYearly={isYearly} />
-        })}
+        {plans.map((plan) => (
+          <PricingCard
+            key={plan.title}
+            {...plan}
+            isYearly={isYearly}
+            onSubscribe={() => handleSubscribe(plan.title, isYearly ? plan.yearlyPrice : plan.monthlyPrice)}
+            isCurrentPlan={subscription?.subscriptionName === `${plan.title} Plan` && subscription?.isYearly === isYearly}
+            disabled={subscription?.subscriptionName === `${plan.title} Plan` && subscription?.isYearly === isYearly}
+          />
+        ))}
       </section>
+      {/* {subscription && (
+        <div className="text-center mt-8">
+          <p>Current plan: {subscription.subscriptionName} ({subscription.isYearly ? 'Yearly' : 'Monthly'})</p>
+          <p>Renews on: {new Date(subscription.stripeCurrentPeriodEnd).toLocaleDateString()}</p>
+        </div>
+      )} */}
     </div>
   )
 }

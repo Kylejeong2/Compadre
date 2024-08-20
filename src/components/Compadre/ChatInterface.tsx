@@ -19,6 +19,8 @@ type Props = {
     characteristics: string;
 };
 
+const MAX_CONTEXT_MESSAGES = 10; // Adjust as needed
+
 export const ChatInterface: React.FC<Props> = ({ user, compadreName, compadreId, characteristics }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -36,19 +38,32 @@ export const ChatInterface: React.FC<Props> = ({ user, compadreName, compadreId,
     scrollToBottom();
   }, [messages]);
 
+  const getContextWindow = (messages: Message[]): Message[] => {
+    return messages.slice(-MAX_CONTEXT_MESSAGES);
+  };
+
   const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage: Message = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInput('');
     setIsLoading(true);
 
     try {
+      const contextWindow = getContextWindow(updatedMessages);
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user, message: input, compadreId, characteristics, compadreName }),
+        body: JSON.stringify({ 
+          user, 
+          message: input,
+          messages: contextWindow, 
+          compadreId, 
+          characteristics, 
+          compadreName 
+        }),
       });
 
       if (!response.ok) throw new Error('Failed to get response');
@@ -98,7 +113,7 @@ export const ChatInterface: React.FC<Props> = ({ user, compadreName, compadreId,
           onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
           placeholder="Type a message..."
           className="flex-1 border rounded-lg px-4 py-2 mx-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          disabled={isLoading}
+        //   disabled={isLoading}
         />
         <Button
           onClick={handleSend}

@@ -21,21 +21,21 @@ export const faqData: FAQItem[] = [
   {
     question: 'How do I create an account with compadre?',
     answer:
-      'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+      'To get started, simply sign up for an account on Compadre and start chatting!',
   },
   {
     question: 'What even is Compadre?',
     answer:
-      'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.',
+      'Compadres are AI friends that are designed to help you live a happier and more fulfilling life.',
   },
   {
     question: 'How many compadres can I have?',
     answer:
-      'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.',
+      'You can have as many compadres as you want. The free tier starts with 1, but you can upgrade to the Pro tier for more.',
   },
   {
     question: 'Can I have my Compadre forever?',
     answer:
-      'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.',
+      'Yes, you can have your Compadre forever. You can also delete your Compadre at any time.',
   },
 ];
