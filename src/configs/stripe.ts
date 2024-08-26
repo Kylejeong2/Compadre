@@ -1,32 +1,30 @@
 import Stripe from "stripe";
-import { Stripe as BrowserStripe, loadStripe } from "@stripe/stripe-js";
-// import {} from 'stripe'
+import { loadStripe, Stripe as StripeJS } from "@stripe/stripe-js";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-08-16",
 });
 
-// https://vercel.com/guides/getting-started-with-nextjs-typescript-stripe
-let stripePromise: Promise<BrowserStripe | null>;
-const getStripe = () => {
+let stripePromise: Promise<StripeJS | null>;
+export const getStripe = () => {
   if (!stripePromise) {
     stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK!);
   }
   return stripePromise;
 };
 
-export default getStripe;
-
-// create stripe customer
 export const createStripeCustomer = async (email: string) => {
-  const customer = await stripe.customers.create({
-    email,
-  });
-
+  const customer = await stripe.customers.create({ email });
   return customer;
 };
 
-// Stripe Plans
+export const createPortalSession = async (customerId: string, returnUrl: string) => {
+  const session = await stripe.billingPortal.sessions.create({
+    customer: customerId,
+    return_url: returnUrl,
+  });
+  return session.url;
+};
 
 export const storeSubscriptionPlans: SubscriptionPlan[] = [
   {

@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation'
 import { useUser } from "@clerk/nextjs";
 import { loadStripe } from '@stripe/stripe-js';
 import useSubscriptions from "@/hooks/getSubscriptionData";
-import { toast } from 'react-hot-toast'; // Assuming you're using react-hot-toast for notifications
+import { toast } from 'react-hot-toast';
 
 type PricingSwitchProps = {
   onSwitch: (value: string) => void
@@ -100,7 +100,7 @@ const PricingCard = ({ isYearly, title, monthlyPrice, yearlyPrice, description, 
         onClick={onSubscribe}
         disabled={disabled}
       >
-        {isCurrentPlan ? 'Current Plan' : actionLabel}
+        {isCurrentPlan ? "Current Plan" : actionLabel}
       </Button>
     </CardFooter>
   </Card>
@@ -123,6 +123,11 @@ export default function SubscriptionPage() {
   const handleSubscribe = async (plan: string, price: number) => {
     if (!user) {
       router.push('/sign-in')
+      return
+    }
+
+    if (subscription && subscription.subscriptionStatus === 'active') {
+      toast.error('You already have an active subscription. Please manage your subscription in your profile.')
       return
     }
 
@@ -167,6 +172,10 @@ export default function SubscriptionPage() {
     }
   }
 
+  const handleManageSubscription = () => {
+    router.push(`/dashboard/profile/${user?.id}`);
+  };
+
   const plans = [
     {
       title: "Free",
@@ -207,30 +216,43 @@ export default function SubscriptionPage() {
     return <div>Error: {error}</div>
   }
 
+  const isSubscribed = subscription && subscription.subscriptionName !== "Free Plan";
+
   return (
-    <div className="flex flex-col py-8 h-screen">
-      <div className="flex flex-col items-center">
+    <div className="flex flex-col py-8 min-h-screen">
+      <div className="flex flex-col items-center mb-8">
         <PricingHeader title="Pricing Plans" subtitle="Choose the plan that's right for you" />
         <PricingSwitch onSwitch={togglePricingPeriod} />
       </div>
-      <section className="flex flex-col sm:flex-row sm:flex-wrap justify-center gap-8 mt-8">
-        {plans.map((plan) => (
-          <PricingCard
-            key={plan.title}
-            {...plan}
-            isYearly={isYearly}
-            onSubscribe={() => handleSubscribe(plan.title, isYearly ? plan.yearlyPrice : plan.monthlyPrice)}
-            isCurrentPlan={subscription?.subscriptionName === `${plan.title} Plan` && subscription?.isYearly === isYearly}
-            disabled={subscription?.subscriptionName === `${plan.title} Plan` && subscription?.isYearly === isYearly}
-          />
-        ))}
+      <section className="flex flex-col sm:flex-row sm:flex-wrap justify-center gap-8">
+        {plans.map((plan) => {
+          const isPlanSubscribed = subscription?.subscriptionName?.startsWith(plan.title) ?? false;
+          const isCurrentPlan = isPlanSubscribed && subscription?.isYearly === isYearly;
+
+          return (
+            <PricingCard
+              key={plan.title}
+              {...plan}
+              isYearly={isYearly}
+              onSubscribe={subscription.subscriptionStatus === 'active' 
+                ? handleManageSubscription 
+                : () => handleSubscribe(plan.title, isYearly ? plan.yearlyPrice : plan.monthlyPrice)}
+              isCurrentPlan={isCurrentPlan}
+              disabled={isCurrentPlan}
+              actionLabel={
+                subscription.subscriptionStatus !== 'active'
+                  ? "Subscribe"
+                  : 
+                isCurrentPlan
+                  ? "Current Plan"
+                  : isSubscribed
+                    ? "Manage Subscription"
+                    : plan.actionLabel
+              }
+            />
+          );
+        })}
       </section>
-      {/* {subscription && (
-        <div className="text-center mt-8">
-          <p>Current plan: {subscription.subscriptionName} ({subscription.isYearly ? 'Yearly' : 'Monthly'})</p>
-          <p>Renews on: {new Date(subscription.stripeCurrentPeriodEnd).toLocaleDateString()}</p>
-        </div>
-      )} */}
     </div>
   )
 }

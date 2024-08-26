@@ -3,7 +3,22 @@ import { clerk } from '@/configs/clerk-server'
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from 'stripe'
 
+// to listen run this: stripe listen --forward-to localhost:3000/api/webhook/stripe
+
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+
+async function cancelExistingSubscriptions(customerId: string, newSubscriptionId: string) {
+  const subscriptions = await stripe.subscriptions.list({
+    customer: customerId,
+    status: 'active',
+  });
+
+  for (const subscription of subscriptions.data) {
+    if (subscription.id !== newSubscriptionId) {
+      await stripe.subscriptions.update(subscription.id, { cancel_at_period_end: true });
+    }
+  }
+}
 
 export async function POST(request: NextRequest) {
   const buf = await request.text();
@@ -75,6 +90,9 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event) {
     const isYearly = session.metadata?.isYearly === 'true';
 
     try {
+      // Cancel any existing subscriptions
+      await cancelExistingSubscriptions(customerId, subscription.id);
+
       await clerk.users.updateUser(userId, {
         privateMetadata: {
           ...user.privateMetadata,

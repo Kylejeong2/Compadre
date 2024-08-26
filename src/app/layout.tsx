@@ -21,11 +21,11 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider afterSignOutUrl="/">
-      <html lang="en">
+      <html lang="en" className="dark">
         <Provider>
           <body className={inter.className}>
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-            <PreloaderProvider>
+            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} forcedTheme="dark">
+              <PreloaderProvider>
                 <Layout>
                   {children}
                 </Layout>

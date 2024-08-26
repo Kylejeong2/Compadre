@@ -27,7 +27,7 @@ const Header = () => {
   return (
     <Wrapper>
       <Inner className="flex items-center justify-between">
-        <div className="flex items-center">
+        <div className="w-1/3 flex items-center justify-start">
           <Link href="/" className="flex-shrink-0">
             <LogoContainer className="flex items-center">
               <Image src="/images/logo.png" alt="compadre_logo" width={140} height={30} priority />
@@ -42,30 +42,37 @@ const Header = () => {
             <Image src={ic_bars} alt="bars" />
           </BurgerMenu>
         </div>
-        <Nav className={`items-center justify-center ${isOpen ? 'flex' : 'hidden md:flex'}`}>
-          {links.map((link, i) => (
-            <Link href={link.url} key={i} className="mx-4">
-              <AnimatedLink key={i} title={link.linkTo} />
-            </Link>
-          ))}
-        </Nav>
-        <CallToActions className={`items-center ${isOpen ? 'flex' : 'hidden md:flex'}`}>
-          {isSignedIn ? (
-            <>
-              <Link href={`/dashboard/profile/${user?.id}`} className="mr-4">
-                <AnimatedLink title="Profile" />
+        <div className="w-1/3 flex justify-center">
+          <Nav className={`items-center justify-center ${isOpen ? 'flex' : 'hidden md:flex'}`}>
+            {links.map((link, i) => (
+              <Link href={link.url} key={i} className="mx-4">
+                <AnimatedLink key={i} title={link.linkTo} />
               </Link>
-              <UserButton />
-            </>
-          ) : (
-            <>
-              <Link href="/sign-in" className="mr-4">
-                <AnimatedLink title="Login" />
-              </Link>
-              <GetStartedButton padding="0.5rem 0.75rem" />
-            </>
-          )}
-        </CallToActions>
+            ))}
+          </Nav>
+        </div>
+        <div className="w-1/3 flex justify-end">
+          <CallToActions className={`items-center space-x-4 ${isOpen ? 'flex' : 'hidden md:flex'}`}>
+            {isSignedIn ? (
+              <>
+                <Link href="/dashboard">
+                  <AnimatedLink title="Dashboard" />
+                </Link>
+                <Link href={`/dashboard/profile/${user?.id}`}>
+                  <AnimatedLink title="Profile" />
+                </Link>
+                <UserButton />
+              </>
+            ) : (
+              <>
+                <Link href="/sign-in">
+                  <AnimatedLink title="Login" />
+                </Link>
+                <GetStartedButton padding="0.5rem 0.75rem" />
+              </>
+            )}
+          </CallToActions>
+        </div>
       </Inner>
     </Wrapper>
   );
