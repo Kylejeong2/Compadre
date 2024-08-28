@@ -4,16 +4,16 @@ Your best friend that's always there for you.
 
 ## Getting Started
 
-First, run the development server:
+Install the dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -37,6 +37,14 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
+## Stripe
+
+To listen for webhooks, run the following command:
+
+```bash
+stripe listen --forward-to localhost:3000/api/webhook/stripe
+```
+
 Tech Stack
 - Supabase
 - DrizzleORM
@@ -45,7 +53,5 @@ Tech Stack
 - Tailwind
 - RadixUI (components)
 - Clerk Auth
-- Daily (call)
 - OpenAI
-- Groq
-- 
+- Mem0
